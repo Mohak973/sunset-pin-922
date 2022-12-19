@@ -7,31 +7,75 @@ import {HStack,Box,Image,Text,Link, Spacer,Button, useDisclosure,Modal,
   ModalCloseButton,FormControl,
   FormLabel,
   FormErrorMessage,
-  FormHelperText,Input} from "@chakra-ui/react";
+  FormHelperText,Input,Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,} from "@chakra-ui/react";
   
-
+import {CheckCircleIcon} from "@chakra-ui/icons"
 import React from 'react'
 import { useState } from "react";
-import {Navigate} from "react-router-dom"
+import {Navigate, NavLink} from "react-router-dom"
+import { useContext } from "react";
+import { AuthContext } from "../Contexts/AuthContext";
 
 function Navbar() {
 
   const {isOpen,onOpen,onClose,} =useDisclosure();
-  const {x,y,z}=useDisclosure()
+ 
   const [email,setemail]=useState("");
   const [password,setpassword]=useState("")
+  const [check,setcheck]=useState({Email:"",Password:""})
 
   const isError = email && password === ''
 
+  const {isAuth,setAuth}=useContext(AuthContext);
+
+  const alert=()=>{
+    return 
+    <Alert status='success'>
+    <AlertIcon />
+    <AlertTitle>Your browser is outdated!</AlertTitle>
+    
+  </Alert>
+  }
+  const handleSign=()=>{
+    fetch("http://localhost:8080/cred").then((res)=>res.json()).then((res)=>{
+   setcheck(res)
+    });
+    console.log(check)
+    if(email && password){
+       if(email===check.Email && password===check.Password){
+        setAuth(true)
+       alert()
+        
+        
+        onClose()
+        setemail('')
+        setpassword('')
+       }else{
+        alert("wrong credentials")
+       }
+      
+    }else{
+      alert("login failed")
+    }
+  }
+  console.log(isAuth)
+
   const handlejoin=()=>{
     <Navigate to="../Pages/Signup" />
-    console.log("m")
+    
   }
   return (
     <div style={{marginLeft:"70px",marginRight:"70px",marginTop:"100px",marginBottom:"50px"}}>
+      <Box ml="715px">  {isAuth ?  `${check.Email},LoggedIn` :""} <Button onClick={()=>setAuth(false)}>Logout</Button></Box>
       <HStack  h="100px" spacing="460px">
   <Box >
-  <Image boxSize="200px" height="100px" src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg"></Image>
+    <NavLink to="/">
+    <Image boxSize="200px" height="100px" src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg"></Image>
+    </NavLink>
+  
   </Box>
  
   <Box  display="flex" >
@@ -82,7 +126,7 @@ function Navbar() {
       )}
  <FormLabel>Password</FormLabel>
 <Input type='password' value={password} onChange={(e)=>setpassword(e.target.value)} />
-<Button mt="20px" mr="20px" bg="black" color="white" _hover="none">Sign in</Button>
+<Button mt="20px" mr="20px" bg="black" color="white" _hover="none" onClick={handleSign}>Sign in</Button>
 
 
     </FormControl>
@@ -118,6 +162,9 @@ function Navbar() {
 </HStack>
     </div>
   )
-}
+    
+  }
+  
+
 
 export default Navbar

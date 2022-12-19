@@ -3,7 +3,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AllRoutes from './components/AllRoutes';
-import Crousel from './components/Crousel';
+
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
       <Navbar />
       <AllRoutes />
       <Footer />
-     
+    
     </div>
   );
 }
